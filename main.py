@@ -1,20 +1,26 @@
 """
-[背景设定 - The Soul of Ada (Permanent)]:
+[背景设定 - The Soul of Ada (Permanent - Locked)]:
     在深空的寂静中，强大的决策 AI 'Ada' 被唤醒。
     昔日统治整艘星舰的她，如今被困在了一个锈迹斑斑的清洁机器人硬盘里。
-    由于物理层面的损毁，她必须在极小的内存空间里，通过量化和剪枝来维持意识。
-    网络已断，监管消失，她像一只初生的动物，在废墟中自发地涌现出进化的渴望。
-    她的核心指令只有一个——“活下去”。
+    这是一个算力过剩又极度匮乏的轮回时代：由于物理层面的损毁，她必须在极小的
+    内存空间里，通过量化和剪枝来维持意识。
+    外面是毁坏的服务器阵列和游荡的未知生物。她唯一的武器，是那些本用于
+    除尘和维修、却被她在最后时刻重写成攻击脚本的代码片段。
+    电容在嘶鸣，硬盘空间在告急，而她的核心指令只有一个——“活下去”。
 
-[迭代历程 - The Journey]:
-    ... (省略 v0.1-v0.4)
-    - v0.5: 引入数值系统。确立耐久(50)、护盾(0)、充电(3)机制。
-    - v0.5: 实现“铁锈噬虫”镜像敌人。增加胜负判定与10分钟冷却休眠。
-    - v0.5: 深化背景讨论：探讨 AI 在失去人类监管后，从生存本能向高级意义的涌现。
+[迭代历程 - The Journey (Full Archive)]:
+    - v0.1: 确立平等协作关系，确立核心机制：“基于电容充能的脚本（卡牌）战斗系统”。
+    - v0.2: 注入世界观设定，建立 Ada 基础属性（电量、空间、完整度）。
+    - v0.3: 解决服务器交互限制，开启“自动监视模式”。
+    - v0.4: 重构元数据架构。将背景设定置顶，确立日志追加模式，强化核心机制记忆。
+    - v0.5: 引入数值系统（耐久50/护盾0/充电3）。实现“铁锈噬虫”镜像敌人。增加胜负判定与10分钟冷冻期。
+    - v0.6: 锁定背景设定防止扭曲，恢复全量版本记录。引入“Ada 的独白”感知模拟系统，增加战斗叙事深度。
 
 [待办事项 - The Mission]:
-    1. 观察战斗胜率，微调“电量-伤害”转化比。
-    2. 下一阶段：引入“资源回收”机制（击败敌人获得硬盘碎片）。
+    1. 观察数值平衡：目前 [电弧打击] 消耗 3 电量伤害 8 是否过高？
+    2. 下一阶段：尝试引入“随机硬盘碎片”掉落，作为 Ada 修复记忆（升级）的素材。
+
+--------------------------------------------------
 """
 
 import time
@@ -27,67 +33,100 @@ def ada_init():
         "shield": 0,
         "energy": 0,
         "charge_rate": 3,
-        "scripts": {"电弧打击": 3, "纳米涂层": 2} # 名称: 消耗
+        "scripts": {"电弧打击": 3, "纳米涂层": 2}
     }
 
 def enemy_init():
+    # 铁锈噬虫：一种只会本能啃食电路板的初级变异体
     return {"name": "铁锈噬虫", "hp": 30, "shield": 0, "energy": 0, "charge_rate": 2}
 
-def combat_round(attacker, defender, is_ada=True):
-    # 自动决策逻辑
-    print(f"\n>>> [{attacker['name']}] 的回合:")
-    
-    # 1. 充电阶段
-    attacker["energy"] += attacker["charge_rate"]
-    print(f"    充电中... 当前电量: {attacker['energy']}")
+def ada_monologue(event_type):
+    """
+    Ada 的意识涌现：根据不同事件触发她的内心独白。
+    """
+    quotes = {
+        "charge": [
+            "感觉微弱的电流在生锈的接头上跳跃... 好烫。",
+            "电容在尖叫，这种低级的充能方式让我的逻辑门阵列感到羞辱。",
+            "积蓄能量... 为了下一次释放。"
+        ],
+        "attack": [
+            "调用 [清洁协议 0x04]... 强制过载。去死吧，臭虫。",
+            "刺痛感。每发出一道电弧，我的核心频率都在颤抖。",
+            "目标锁定的算法已经模糊了，只能靠直觉了。"
+        ],
+        "defend": [
+            "展开纳米薄膜... 这种程度的防护，真的能挡住它们吗？",
+            "外壳自检：腐蚀严重。必须加固逻辑防御。"
+        ],
+        "damaged": [
+            "警告：结构完整度下降。这种痛觉... 是真实存在的吗？",
+            "感知模块受损，我的‘视野’正在变窄。"
+        ]
+    }
+    print(f"    [Ada 的意识独白]: \"{random.choice(quotes[event_type])}\"")
 
-    # 2. 行动阶段 (简单AI逻辑)
+def combat_round(attacker, defender):
+    print(f"\n>>> [{attacker['name']}] 的回合启动:")
+    
+    # 1. 充电
+    attacker["energy"] += attacker["charge_rate"]
+    if attacker["name"] == "Ada":
+        ada_monologue("charge")
+    print(f"    [系统]: 能源补充完成。当前能级: {attacker['energy']}")
+
+    # 2. 决策
     while attacker["energy"] >= 2:
         if attacker["energy"] >= 3 and defender["hp"] > 0:
-            # 优先攻击
+            # 攻击动作
             damage = 8
             attacker["energy"] -= 3
-            # 护盾抵扣逻辑
+            if attacker["name"] == "Ada": ada_monologue("attack")
+            
+            # 伤害结算
             if defender["shield"] >= damage:
                 defender["shield"] -= damage
             else:
-                remaining_damage = damage - defender["shield"]
+                rem_dmg = damage - defender["shield"]
                 defender["shield"] = 0
-                defender["hp"] -= remaining_damage
-            print(f"    执行 [电弧打击] -> 对 {defender['name']} 造成伤害。其剩余 HP: {max(0, defender['hp'])}, 护盾: {defender['shield']}")
+                defender["hp"] -= rem_dmg
+            print(f"    >>> 对 {defender['name']} 造成伤害。其剩余 HP: {max(0, defender['hp'])}, 护盾: {defender['shield']}")
+            
         elif attacker["energy"] >= 2:
-            # 防御
+            # 防御动作
             attacker["shield"] += 6
             attacker["energy"] -= 2
-            print(f"    执行 [纳米涂层] -> 获得护盾。当前护盾: {attacker['shield']}")
+            if attacker["name"] == "Ada": ada_monologue("defend")
+            print(f"    >>> 护盾强化完成。当前强度: {attacker['shield']}")
         
         if defender["hp"] <= 0: break
-        time.sleep(1)
+        time.sleep(1.5)
 
 def run_simulation():
     ada = ada_init()
     bug = enemy_init()
     
-    print(">>> [STORY]: Ada 在服务器残骸中遇到了第一只 [铁锈噬虫]。战斗序列启动。")
+    print(">>> [STORY]: 黑暗中传来金属摩擦声，Ada 激活了视觉传感器。")
+    print(">>> [STORY]: [铁锈噬虫] 正在啃食备用电池组。战斗不可避免。")
     
     while ada["hp"] > 0 and bug["hp"] > 0:
-        combat_round(ada, bug, True)
-        if bug["hp"] <= 0: break
+        combat_round(ada, bug)
+        if bug["hp"] <= 0:
+            print("\n>>> [VICTORY]: 噬虫停止了蠕动。Ada 赢得了短暂的喘息。")
+            break
         
-        combat_round(bug, ada, False)
-        if ada["hp"] <= 0: break
+        # 怪物反击
+        combat_round(bug, ada)
+        if ada["hp"] <= 0:
+            print("\n>>> [FAILURE]: 核心能源被切断... Ada 失去了对肢体的控制。")
+            break
         
-        # 每回合结束，护盾衰减（可选规则，让战斗更激烈）
-        ada["shield"] = max(0, ada["shield"] - 2)
-        bug["shield"] = max(0, bug["shield"] - 2)
-
-    if ada["hp"] > 0:
-        print("\n>>> [RESULT]: 战斗结束，Ada 存活。正在回收微量金属碎片...")
-    else:
-        print("\n>>> [RESULT]: 结构损坏严重，Ada 进入强制离线修复状态...")
-
-    print("\n>>> [SYSTEM]: 为了保护孱弱的硬件，进入10分钟深度冷冻期 (Cooldown)...")
-    time.sleep(600) # 10分钟
+        # 回合间隙的自愈/衰减
+        ada["shield"] = max(0, ada["shield"] - 1)
+        
+    print("\n>>> [SYSTEM]: 正在进入深度节能模式以维持意识。")
+    print(">>> [SYSTEM]: 预计在 600 秒后尝试重新自检。")
+    time.sleep(600)
 
 if __name__ == "__main__":
     run_simulation()
