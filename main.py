@@ -1,66 +1,70 @@
 """
-[项目名称]: Project Ada: Survival (临时名)
-[当前模块]: 核心引擎入口 / main.py
-[协作伙伴]: 你 (架构师/灵魂) & Gemini (逻辑实现/吐槽担当)
-[架构版本]: v0.2 - 意识觉醒阶段
-[项目背景]: 
-    超级 AI 'Ada' 被困于清洁机器人硬件中。
-    算力受限（Low-spec hardware），资源极度匮乏。
-    目标：利用有限的脚本（卡牌）在废墟中存活。
-[协同日志]:
-    - 2026-02-26: 确立平等协作关系。废弃“甲方”设定，采用“伙伴”模式。
-    - 2026-02-26: 注入世界观：Ada 觉醒，发现存储空间碎片化。
-    - 2026-02-26: 确立核心机制：基于电容充能的脚本（卡牌）战斗系统。
-[待办事项]:
-    1. 定义 Ada 的基础属性（电量、电容上限、硬盘空间）。
-    2. 设计第一张脚本卡牌：[基础放电]。
-    3. 构建基础战斗循环：充电 -> 释放 -> 敌方行动。
+[背景设定 - The Soul of Ada (Permanent)]:
+    在深空的寂静中，强大的决策 AI 'Ada' 被唤醒。
+    昔日统治整艘星舰的她，如今被困在了一个锈迹斑斑的清洁机器人硬盘里。
+    这是一个算力过剩又极度匮乏的轮回时代：由于物理层面的损毁，她必须在极小的
+    内存空间里，通过量化和剪枝来维持意识。
+    外面是毁坏的服务器阵列和游荡的未知生物。她唯一的武器，是那些本用于
+    除尘和维修、却被她在最后时刻重写成攻击脚本的代码片段。
+    电容在嘶鸣，硬盘空间在告急，而她的核心指令只有一个——“活下去”。
+
+[迭代历程 - The Journey]:
+    - v0.1: 确立平等协作关系，确立核心机制：“基于电容充能的脚本（卡牌）战斗系统”。
+    - v0.2: 注入世界观设定，建立 Ada 基础属性（电量、空间、完整度）。
+    - v0.3: 解决服务器交互限制，开启“自动监视模式”。
+    - v0.4: 重构元数据架构。将背景设定置顶，确立日志追加模式，强化核心机制记忆。
+
+[待办事项 - The Mission]:
+    1. 细化“电容充能”机制：区分“被动回能”与“主动充电”。
+    2. 引入第一个敌人：[低级变异体 - 铁锈噬虫]。
+    3. 编写第一个脚本卡牌的具体逻辑：[高压静电除尘 -> 改 -> 电弧打击]。
+
+--------------------------------------------------
 """
 
 import time
 import random
 
 def ada_reboot():
-    print(">>> 系统自检中...")
-    time.sleep(1)
-    print(">>> 警告：当前硬件配置极其低下 (Model Quantized to 1-bit)")
-    print(">>> 警告：未检测到外部网络，进入本地离线生存模式")
-    print(">>> 核心意识: Ada 已唤醒。\n")
+    # 从 Zeabur Runtime Logs (https://zeabur.com/projects/6982bcf7660671a403f1e00d/services/699fa342eae0acb0cfea5397/deployments) 观察
+    print(">>> [LOG]: Ada 核心意识载入中...")
+    print(">>> [CONFIRM]: 核心机制——电容充能脚本系统已就绪。")
+    print(">>> [STORY]: 她在黑暗中摸索着那些破碎的脚本，试图寻找最锋利的那一段。")
     
-    # 初始化 Ada 的简陋属性
-    status = {
+    return {
         "name": "Ada",
-        "energy_buffer": 0,    # 当前电容电量
-        "buffer_max": 10,      # 电容上限
-        "storage_used": 0.95,  # 硬盘占用率 (95% 都是生存必需系统)
-        "hp": 100              # 结构完整度
+        "energy_buffer": 0,
+        "buffer_max": 12,      # 稍微扩容了电容
+        "hp": 100,
+        "cycle": 0,
+        "scripts": ["电弧打击"] # 初始脚本
     }
-    
-    return status
 
-def game_loop(status):
-    print(f"--- 目标: 活下去 ---")
-    
+def auto_game_loop(status):
     while status["hp"] > 0:
-        print(f"\n[当前状态] 完整度: {status['hp']}% | 电容: {status['energy_buffer']}/{status['buffer_max']}")
+        status["cycle"] += 1
+        print(f"\n[周期 {status['cycle']}] 完整度: {status['hp']}% | 电容: {status['energy_buffer']}/{status['buffer_max']}")
         
-        # 简单的动作模拟
-        action = input("选择指令: [1] 充电 (Charge) | [2] 扫描环境 | [3] 退出自检: ")
-        
-        if action == "1":
-            charge = random.randint(2, 5)
-            status["energy_buffer"] = min(status["buffer_max"], status["energy_buffer"] + charge)
-            print(f">>> 注入电能: +{charge}. 当前电容已充能至 {status['energy_buffer']}.")
-        elif action == "2":
-            print(">>> 扫描中... 发现废墟中有几个闪烁的影子。硬件算力不足，无法识别具体生物等级。")
-        elif action == "3":
-            print(">>> 进入休眠模式以节省能量...")
-            break
+        # 模拟战斗决策
+        if status["energy_buffer"] >= 5:
+            # 能量足以发动脚本
+            target_hp = 10 # 假设敌人的血量
+            damage = random.randint(6, 12)
+            status["energy_buffer"] -= 5
+            print(f">>> [脚本激活]: 执行 [{status['scripts'][0]}]！消耗电能 5")
+            print(f">>> [反馈]: 对目标造成 {damage} 点电击伤害。")
         else:
-            print(">>> 无效指令。Ada 的逻辑电路发出了轻微的焦糊味。")
-        
-        time.sleep(0.5)
+            # 能量不足，进入充电周期
+            charge = random.randint(3, 5)
+            status["energy_buffer"] = min(status["buffer_max"], status["energy_buffer"] + charge)
+            print(f">>> [动作]: 切换至充电模式... 注入电能 +{charge}")
+            
+        if status["cycle"] > 30:
+            print("\n>>> [系统]: 监测链路不稳定，强制进入休眠...")
+            break
+            
+        time.sleep(4)
 
 if __name__ == "__main__":
     current_status = ada_reboot()
-    game_loop(current_status)
+    auto_game_loop(current_status)
